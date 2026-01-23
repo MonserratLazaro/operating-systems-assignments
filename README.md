@@ -1,1 +1,3 @@
-Operating Systems course assignments and labs
+# Operating Systems
+
+Assignments and labs for my Operating Systems course.
