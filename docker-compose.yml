@@ -1,0 +1,11 @@
+services:
+  lab:
+    build: .
+    container_name: os_lab
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./:/workspace:cached
+    working_dir: /workspace
+    # Mantener en ejecución para entrar y experimentar
+    command: bash -lc "sleep infinity"
