@@ -43,8 +43,8 @@ Word horizontal1[NUM_WORDS] = {
 
 Word horizontal2[NUM_WORDS] = {
     {"perro", "Animal doméstico que es conocido como el mejor amigo del hombre."},
-    {"pacto", "Acuerdo entre dos o más personas."},
-    {"pasto", "Planta verde que comen los animales como las vacas."},
+    {"pacto", "Acuerdo entre dos o más personas que se comprometen a cumplir lo estipulado."},
+    {"pasto", "Hierba que come el ganado en el terreno donde se cría."},
     {"plato", "Utensilio donde se sirve la comida."},
     {"plomo", "Metal pesado de color gris."}
 };
@@ -60,23 +60,23 @@ Word horizontal3[NUM_WORDS] = {
 Word vertical1[NUM_WORDS] = {
     {"ganado", "Conjunto de animales criados en el campo, como vacas u ovejas."},
     {"pasado", "Tiempo que ya ocurrió antes del presente."},
-    {"amparo", "Protección o ayuda que se le da a alguien."},
+    {"amparo", "Recurso legal que protege los derechos fundamentales frente a abusos de autoridad."},
     {"zapato", "Calzado que se usa para cubrir el pie."},
     {"casado", "Persona que tiene matrimonio."}
 };
 
 Word vertical2[NUM_WORDS] = {
     {"planta", "Ser vivo que crece en la tierra y no se mueve, como un árbol o una flor."},
-    {"piedra", "Material duro que se encuentra en la naturaleza."},
+    {"piedra", "Sustancia mineral, más o menos dura y compacta."},
     {"puerta", "Parte de una casa que sirve para entrar o salir."},
     {"prueba", "Evaluación para medir conocimientos o habilidades."},
-    {"paloma", "Ave común de color blanco o gris."}
+    {"paloma", "Ave común de color blanco o gris, simboliza la paz."}
 };
 
 Word vertical3[NUM_WORDS] = {
-    {"comino", "Semilla usada como condimento en la comida."},
+    {"comino", "Especia aromática obtenida de las semillas de la planta Cuminum cyminum."},
     {"conejo", "Animal pequeño con orejas largas que salta."},
-    {"tomate", "Fruta roja que se usa mucho en la comida."},
+    {"tomate", "Fruta roja muy usado en la cocina."},
     {"sonido", "Vibración que se puede escuchar con los oídos."},
     {"modelo", "Representación o ejemplo que sirve como referencia."}
 };
@@ -556,6 +556,8 @@ int main(void) {
         printf("• Si fallas, la palabra puede cambiar con el tiempo.\n");
         printf("• Una palabra cambiará cada %d segundos aleatoriamente.\n", CHANGE_INTERVAL);
         printf("• Oprime CRTL + C en cualquier momento para salir.\n\n");
+        printf("\033[33;1m⚠  IMPORTANTE:\033[0m\033[37m Si el crucigrama muta mientras escribes, termina tu respuesta normal.\n");
+        printf("   Si la pista cambió, responde a la nueva.\033[0m\n\n");
         printf("Presiona ENTER para continuar...\n");
         while (getchar() != '\n'); 
         exit(0);
