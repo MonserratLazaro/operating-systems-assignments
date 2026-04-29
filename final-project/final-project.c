@@ -1,4 +1,4 @@
-// House of Leaves — Changing-Word Crossword Puzzle
+// HOUSE OF LEAVES: CHANGING-WORD CROSSWORD PUZZLE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -295,7 +295,6 @@ static void print_board(void) {
 
     if (!game_over)
         printf("  \033[33m\n  Número de pregunta (CTRL + C = salir): \033[0m");
-    fflush(stdout);
 }
 
 /* ══════════════════════════════════════════
@@ -304,7 +303,7 @@ static void print_board(void) {
            parent process waits with waitpid
    ══════════════════════════════════════════ */
 
-static volatile sig_atomic_t render_flag = 0;
+static volatile int render_flag = 0;
 
 static void handler_sigusr1(int sig) {
     render_flag = 1;
@@ -332,29 +331,15 @@ static void do_render(void) {
    THREAD 1 — CHANGE MANAGER
    ══════════════════════════════════════════ */
 
-static volatile sig_atomic_t alarm_flag = 0;
-
-static void handler_sigalrm(int sig) {
-    alarm_flag = 1;
-}
-
 void handler_sigint(int s){
     printf("  \033[33m\nSe detectó CTRL + C por parte del usuario\n\033[0m");
     game_over = 1;
-    fflush(stdout);
     exit(1);
 }
 
 static void *thread_changes(void *arg) {
-    signal(SIGALRM, handler_sigalrm);
-    alarm(CHANGE_INTERVAL);
-
     while (1) {
-        pause(); 
-
-        if (!alarm_flag) 
-            continue;
-        alarm_flag = 0;
+        sleep(CHANGE_INTERVAL); 
 
         pthread_mutex_lock(&mutex);
 
@@ -427,7 +412,6 @@ static void *thread_changes(void *arg) {
         pthread_mutex_unlock(&mutex);
 
         kill(parent_pid, SIGUSR1);   // Refresh terminal content
-        alarm(CHANGE_INTERVAL);      // Schedule the next shift
     }
     return NULL;
 }
@@ -471,7 +455,6 @@ static void *thread_input(void *arg) {
         }
 
         printf("\033[33m  Respuesta: \033[0m");
-        fflush(stdout);
 
         if (!fgets(ans_buf, sizeof(ans_buf), stdin)) 
             break;
@@ -604,7 +587,6 @@ int main(void) {
     pthread_cancel(tid_input);
     pthread_join(tid_cambios, NULL);
     pthread_join(tid_input,   NULL);
-    alarm(0);
 
     printf("\n\033[36m  Gracias por jugar La Casa de Hojas.\033[0m\n\n");
     return 0;
