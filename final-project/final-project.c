@@ -570,7 +570,6 @@ int main(void) {
     pthread_create(&tid_cambios, NULL, thread_changes, NULL);
     pthread_create(&tid_input,   NULL, thread_input,   NULL);
 
-    // !!! REVISAR
     while (1) {
         pause();
         if (render_flag) 
