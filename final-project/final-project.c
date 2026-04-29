@@ -558,7 +558,6 @@ int main(void) {
         printf("• Oprime CRTL + C en cualquier momento para salir.\n\n");
         printf("Presiona ENTER para continuar...\n");
         while (getchar() != '\n'); 
-        getchar(); 
         exit(0);
     }
     waitpid(instr_pid, NULL, 0);
