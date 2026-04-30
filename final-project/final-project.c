@@ -1,4 +1,21 @@
-// HOUSE OF LEAVES: CHANGING-WORD CROSSWORD PUZZLE
+/*   HOUSE OF LEAVES: CHANGING-WORD CROSSWORD PUZZLE
+ *
+ * - Process Hierarchy: the parent process manages the game and spawns
+ *   child processes via fork() to display instructions and redraw the board.
+ *
+ * - Waitpid: the parent process blocks until each child process terminates.
+ *
+ * - Threads: two POSIX threads run concurrently within the parent process;
+ *   one manages word changes over time and the other handles user input.
+ *
+ * - Signals: SIGUSR1 notifies the parent process to trigger a board redraw,
+ *   while SIGINT allows the user to exit the game gracefully via CTRL+C.
+ *
+ * - Alarms: alarm() schedules a SIGALRM delivery every 60 seconds to display
+ *   a motivational message to the player.
+ *
+ * - Synchronization: a mutex guards all shared variables accessed by both threads.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +39,8 @@
 #define MAX_LEN_WORD 10
 #define MAX_LEN_DESC 100
 
-#define CHANGE_INTERVAL 20   
+#define CHANGE_INTERVAL 20 
+#define ALARM_INTERVAL 60   
 
 /* ══════════════════════════════════════════
    WORD STRUCT 
@@ -331,12 +349,6 @@ static void do_render(void) {
    THREAD 1 — CHANGE MANAGER
    ══════════════════════════════════════════ */
 
-void handler_sigint(int s){
-    printf("  \033[33m\nSe detectó CTRL + C por parte del usuario\n\033[0m");
-    game_over = 1;
-    exit(1);
-}
-
 static void *thread_changes(void *arg) {
     while (1) {
         sleep(CHANGE_INTERVAL); 
@@ -535,6 +547,28 @@ static void *thread_input(void *arg) {
     return NULL;
 }
 
+void handler_sigint(int s){
+    printf("\033[33m\n  ¡Hasta pronto! Esperamos verte de nuevo en La Casa de Hojas.\033[0m\n");
+    game_over = 1;
+    exit(1);
+}
+
+static void handler_sigalrm(int sig) {
+    static int alarm_count = 0;
+    static const char *phrases[] = {
+        "¿Tan difícil es? La casa lleva esperando mucho tiempo...",
+        "El crucigrama no se va a resolver solo, ¿o sí?",
+        "Otros jugadores ya van por la mitad. ¿Y tú?",
+        "La casa tiene paciencia. ¿La tienes tú?",
+        "Tick tock... la casa sigue cambiando."
+    };
+
+    alarm_count++;
+    int phrase_idx = (alarm_count - 1) % (sizeof(phrases) / sizeof(phrases[0]));
+    printf("\033[33m\n  [!] Llevas %d minuto(s) jugando. %s\033[0m\n", alarm_count, phrases[phrase_idx]);
+    alarm(ALARM_INTERVAL);
+}
+
 /* ══════════════════════════════════════════
    MAIN
    ══════════════════════════════════════════ */
@@ -556,7 +590,7 @@ int main(void) {
         printf("• Si fallas, la palabra puede cambiar con el tiempo.\n");
         printf("• Una palabra cambiará cada %d segundos aleatoriamente.\n", CHANGE_INTERVAL);
         printf("• Oprime CRTL + C en cualquier momento para salir.\n\n");
-        printf("\033[33;1m⚠  IMPORTANTE:\033[0m\033[37m Si el crucigrama muta mientras escribes, termina tu respuesta normal.\n");
+        printf("\033[33;1m⚠  IMPORTANTE:\033[0m\033[37m Si el crucigrama cambia mientras escribes, termina tu respuesta normal.\n");
         printf("   Si la pista cambió, responde a la nueva.\033[0m\n\n");
         printf("Presiona ENTER para continuar...\n");
         while (getchar() != '\n'); 
@@ -570,6 +604,9 @@ int main(void) {
     pthread_t tid_cambios, tid_input;
     pthread_create(&tid_cambios, NULL, thread_changes, NULL);
     pthread_create(&tid_input,   NULL, thread_input,   NULL);
+
+    signal(SIGALRM, handler_sigalrm);
+    alarm(ALARM_INTERVAL);
 
     while (1) {
         pause();
