@@ -164,7 +164,7 @@ static int is_intersection(int row, int column) {
     hiding logic is in print_board
    ══════════════════════════════════════════ */
 
-static void place_words_on_dashboard(void) {
+static void place_words_on_dashboard() {
     for (int i = 0; i < NUM_ROWS; i++)
         for (int j = 0; j < NUM_COLUMNS; j++)
             dashboard[i][j] = ' ';
@@ -194,7 +194,7 @@ static void place_words_on_dashboard(void) {
    FUNCTION RESPONSIBLE FOR INITIALIZING THE GAME
    ══════════════════════════════════════════ */
 
-static void init_game(void) {
+static void init_game() {
     srand((unsigned)time(NULL));
 
     idx_h1 = rand() % NUM_WORDS;
@@ -232,7 +232,7 @@ static void init_game(void) {
         displays the clue number in gray
    ══════════════════════════════════════════ */
 
-static void print_board(void) {
+static void print_board() {
     printf("\033[2J\033[H");
 
     printf("\033[33;1m"
@@ -330,7 +330,7 @@ static void handler_sigusr1(int sig) {
 /* ══════════════════════════════════════════
    FORK — A child is created every time the board needs to be printed
    ══════════════════════════════════════════ */
-static void do_render(void) {
+static void do_render() {
     render_flag = 0;
     pid_t child = fork();
 
@@ -348,7 +348,6 @@ static void do_render(void) {
 /* ══════════════════════════════════════════
    THREAD 1 — CHANGE MANAGER
    ══════════════════════════════════════════ */
-
 static void *thread_changes(void *arg) {
     while (1) {
         sleep(CHANGE_INTERVAL); 
@@ -360,8 +359,7 @@ static void *thread_changes(void *arg) {
             break; 
         }
 
-        /* Slots disponibles para cambiar */
-        int slots[6];
+        int slots[6];   
         int n = 0;
 
         if (!solved_h1) 
@@ -573,7 +571,7 @@ static void handler_sigalrm(int sig) {
    MAIN
    ══════════════════════════════════════════ */
 
-int main(void) {
+int main() {
     parent_pid = getpid();
 
     // SIGUSR1: fork+render
